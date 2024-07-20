@@ -5,60 +5,86 @@ from typing import Any, Dict, List, Type
 from dgprincess.entity import Entity
 from dgprincess.event import Event
 
+class SimulationReport(BaseModel):
+    simulation: "Simulation" = Field(..., title="The simulation that this report is based on")
+
+    # def pprint(self):
+    #     print("Entities:")
+    #     for entity_type, entities in self.simulation.entities.items():
+    #         print(f"{entity_type}: {len(entities)}")
+    #         for entity in entities:
+    #             print(entity)
+
+    #     print("Events:")
+    #     for event_type, events in self.simulation.events.items():
+    #         print(f"{event_type}: {len(events)}")
+    #         for event in events:
+    #             print(event)
+
+    @property
+    def summary(self) -> str:
+        summary_str = "=== Entities ===\n"
+        for entity_type, entities in self.simulation.entities.items():
+            summary_str += f"  {entity_type}: {len(entities)}\n"
+        summary_str += "\n=== Events ===\n"
+        for event_type, events in self.simulation.events.items():
+            summary_str += f"  {event_type}: {len(events)}\n"
+
+        return summary_str
+
+    def __str__(self):
+        return self.summary
+
+
 class Simulation(BaseModel):
 
     entity_types: List[Type[Entity]] = Field(..., title="List of entity types")
     event_types: List[Type[Event]] = Field(..., title="List of event types")
-    duration: int = Field(..., title="Duration of the simulation")
-    interval: int = Field(..., title="Interval of the simulation")
 
     entities: Dict[str, List[Entity]] = {}
     events: Dict[str, List[Event]] = {}
     tables: List[str] = []
 
-    def pprint(self):
-        print("Entities:")
-        for entity_type, entities in self.entities.items():
-            print(f"{entity_type}: {len(entities)}")
-            for entity in entities:
-                print(entity.state)
+    timer: int = Field(0, title="Current time in the simulation")
 
-        print("Events:")
-        for event_type, events in self.events.items():
-            print(f"{event_type}: {len(events)}")
-            for event in events:
-                print(event.dict())
-    
-    def print_summary(self):
-        print("Summary:")
-        for event_type, events in self.events.items():
-            print(f"{event_type}: {len(events)}")
-        
-        for entity_type, entities in self.entities.items():
-            print(f"{entity_type}: {len(entities)}")
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    def init(self):
         # Initialize entities
         for entity_type in self.entity_types:
             self.entities[entity_type.__name__] = []
 
-            if not hasattr(entity_type, "default_values"):
-                continue
+            if hasattr(entity_type, "default_values") and entity_type.default_values != []:
 
-            for default_values in entity_type.default_values:
-                entity = entity_type(**default_values)
+                for default_values in entity_type.default_values:
+                    default_values["simulation"] = self
+                    entity = entity_type(**default_values)
+                    self.entities[entity_type.__name__].append(entity)
+            
+            else:
+                # Add a single entity
+                entity = entity_type(
+                    simulation=self
+                )
                 self.entities[entity_type.__name__].append(entity)
+
 
         # Initialize events
         for event_type in self.event_types:
             self.events[event_type.__name__] = []
 
-    def run(self):
-        timer = 0.0
-        while timer < self.duration:
-            self._update_entities()
+        # Initialize timer
+        self.timer = 0
 
-            timer += self.interval
+    def run(self, steps: int, increment: int=1):
+        for i in range(steps):
+            self._update_entities()
+            self.timer += increment
+
+        return self.get_report()
+    
+    def get_report(self):
+        return SimulationReport(simulation=self)
 
     def export(self, filename:str, overwrite:bool=False):
         if overwrite:
@@ -109,7 +135,7 @@ class Simulation(BaseModel):
                 self._update_entity(entity_type, entity)
     
     def _update_entity(self, entity_type: Type[Entity], entity: Entity):
-        new_events, new_entities = entity.update(self.interval)
+        new_events, new_entities = entity.update(self.timer)
 
         for event in new_events:
             self.events[event.__class__.__name__].append(event)

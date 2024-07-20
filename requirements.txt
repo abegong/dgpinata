@@ -1,3 +1,4 @@
+faker
+mkdocs
 pydantic
 pytest
-mkdocs
