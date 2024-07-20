@@ -1,4 +1,5 @@
 faker
 mkdocs
+mkdocs-material
 pydantic
 pytest
