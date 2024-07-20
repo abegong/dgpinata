@@ -1,4 +1,4 @@
-# Add More Products
+# Add more products
 
 Next, we'll add more products to the simulation. In this section, we're going to use typing, so let's start by importing the necessary modules.
 

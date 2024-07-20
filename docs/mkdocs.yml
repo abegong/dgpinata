@@ -39,11 +39,15 @@ nav:
   - Quickstart: about.md
   - Tutorial:
     - tutorial/hello-lemonade.md
-    - Add more products: tutorial/add-products.md
-    - Add customers: tutorial/add-products.md
+    - tutorial/add-products.md
+    - tutorial/add-customers.md
     - tutorial/add-db-analytics.md
-    - Give customers preferences across products: tutorial/add-db-analytics.md
-    - Data entry errors: examples/example2.md
+    - Give customers preferences across products: tutorial/add-customer-prefs.md
+    - Model data entry errors: tutorial/model-data-entry-errors.md
+    - Model customer churn: tutorial/model-customer-churn.md
+    - Run marketing campaigns: tutorial/run-marketing-campaigns.md
+    - Acquire another lemonade stand: tutorial/acquire-lemonade-stand.md
+
   - Core concepts:
     - Overview: core-concepts/overview.md
     - Entity: core-concepts/entity.md

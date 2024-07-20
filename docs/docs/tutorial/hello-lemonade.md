@@ -1,4 +1,4 @@
-# Hello, Lemonade!
+# Hello, lemonade!
 
 We'll start with a basic "hello world" example for a DGP describing a lemonade stand. Imagine a lemonade stand that (drumroll) ... sells lemonade. For starters, all we want to do is track sales.
 
