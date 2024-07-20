@@ -1,0 +1,37 @@
+site_name: DGPrincess
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+nav:
+  - Home: index.md
+  - Quickstart: about.md
+  - Core concepts: examples/basic-lemonade.md
+  - Examples:
+    - Basic lemonade: examples/basic-lemonade.md
+    - Data entry errors: examples/example2.md
+    - Changing entity types: examples/example2.md
+    - Event formats that must be normalized: examples/example2.md
