@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Type
 
 from dgprincess.entity import Entity
 from dgprincess.event import Event
+from dgprincess.emitter import ParameterBuilder
 
 class SimulationReport(BaseModel):
     simulation: "Simulation" = Field(..., title="The simulation that this report is based on")
@@ -150,3 +151,39 @@ class Simulation(BaseModel):
 
         for new_entity in new_entities:
             self.entities[new_entity.__class__.__name__].append(new_entity)
+    
+    def _get_event_type_by_name(
+        self,
+        event_type_name:str        
+    ) -> Type:
+        for event_type in self.event_types:
+            if event_type.__name__ == event_type_name:
+                return event_type
+
+        raise ValueError(f"event_type with name {event_type_name} not found.")
+
+    def instantiate_event(
+        self,
+        event_type_name: str,
+        parent_entity: Entity,
+        parameter_builders: Dict[str, ParameterBuilder],
+        timestamp: int,
+    ) -> Event:
+        event_type = self._get_event_type_by_name(event_type_name=event_type_name)
+
+        # Iterate over parameter_builders to build up the keyword args for the new event
+        parameters = {}
+        for name, pb in parameter_builders.items():
+            if pb.eval_str is not None:
+                new_param = eval(pb.eval_str)
+            else:
+                new_param = pb.value
+
+            parameters[pb.name] = new_param
+
+        # Instatiate the new event
+        new_event = event_type(
+            **parameters
+        )
+
+        return new_event

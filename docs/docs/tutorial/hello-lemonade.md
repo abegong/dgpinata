@@ -6,6 +6,7 @@ We start by importing `dgprincess`, using the `dgp` namespace as a shorthand.
 
 ```python
 import dgprincess as dgp
+from typing import Dict
 ```
 
 Next, we define a `Sale` object, with two properties: `amount` and `timestamp`. It's important that each of these properties is annotated with a type hint. Even with no additional context from us, DGPrincess can use these type hints to guess how to generate the schema for a database table.
@@ -22,12 +23,14 @@ In order to emit an `Event`, we need an `Entity`. In this case, we define the `S
 
 ```python
 class Stand(dgp.Entity):
-    def update(self, timestamp):
-        new_sale = Sale(
-            amount = 1,
-            timestamp = timestamp,
-        )
-        return [new_sale], []
+    emitters : Dict = {
+        "new_sale": dgp.IntervalEmitter.define(
+            interval="self.interval",
+            event_type_name="Sale",
+            amount=1,
+            timestamp="timestamp",
+        ),
+    }
 ```
 
  To keep things simple for now, `Stand` doesn't have any properties of its own. It only has an `update` method that returns a list of `Events`, and an empty list. (The empty list is for creating additional `Entities`. We'll worry about it later.)

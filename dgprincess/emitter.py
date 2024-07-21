@@ -1,6 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
-from typing import ClassVar, Dict, List, Optional, Union
+import random
+from typing import Any, Dict, List, Optional, Union
 
 class NormalDistributionParams(BaseModel):
     mean: float
@@ -13,15 +14,20 @@ class UniformDistributionParams(BaseModel):
 
 class ParameterBuilder(BaseModel):
     name: str
-    address: str
-    value: str
+    eval_str: Optional[str] = None
+    value: Optional[Any] = None
+
 
 class Emitter(BaseModel):
     event_type_name: str
 
+    def emit(self, timestamp: int, entity):
+        return [], []
+
 class IntervalSpacingOption(str, Enum):
     START="start"
     UNIFORM="uniform"
+    EXPONENTIAL="exponential"
 
 
 class IntervalEmitter(Emitter):
@@ -30,8 +36,8 @@ class IntervalEmitter(Emitter):
     You can use skip_probability to skip events at random
     """
 
-    interval: int
-    skip_probability: float
+    interval: Union[int, ParameterBuilder]
+    skip_probability: Union[float, ParameterBuilder]
     spacing: IntervalSpacingOption
     normal_offset: Optional[NormalDistributionParams] = None
     uniform_offset: Optional[UniformDistributionParams] = None
@@ -41,14 +47,31 @@ class IntervalEmitter(Emitter):
     def define(
         cls,
         event_type_name: str,
-        interval: int,
+        interval: Union[int, str],
         skip_probability: float = 0.0,
         spacing: Optional[Union[str, IntervalSpacingOption]] = IntervalSpacingOption.START,
         normal_offset: Optional[NormalDistributionParams] = None,
         uniform_offset: Optional[UniformDistributionParams] = None,
         **kwargs,
     ) -> "IntervalEmitter":
-        #!!! Instantiate parameter builders
+        
+        if type(interval) == str:
+            interval = ParameterBuilder(name="interval", eval_str=interval)
+
+        # Instantiate parameter builders
+        parameter_builders = {}
+        for parameter_name, value in kwargs.items():
+            if type(value) == str:
+                parameter_builders[parameter_name] = ParameterBuilder(
+                    name=parameter_name,
+                    eval_str=value,
+                )
+            else:
+                parameter_builders[parameter_name] = ParameterBuilder(
+                    name=parameter_name,
+                    value=value,
+                )
+
         return  cls(
             event_type_name=event_type_name,
             interval=interval,
@@ -56,8 +79,28 @@ class IntervalEmitter(Emitter):
             spacing=spacing,
             normal_offset=normal_offset,
             uniform_offset=uniform_offset,
-            parameter_builders={},
+            parameter_builders=parameter_builders,
         )
+    
+    def emit(self,
+        parent_entity: "Entity",
+        simulation: "Simulation",
+        timestamp: int,
+    ) -> List["Event"]:
+        if self.skip_probability > 0 and random.random() < self.skip_probability:
+            return [], []
+        
+        # Ignore the spacing for now
+
+        # Instantiate
+        new_event = simulation.instantiate_event(
+            event_type_name=self.event_type_name,
+            parent_entity=parent_entity,
+            parameter_builders=self.parameter_builders,
+            timestamp=timestamp,
+        )
+
+        return [new_event], []
         
 
 #     created_at="timestamp",
