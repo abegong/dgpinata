@@ -42,20 +42,22 @@ nav:
     - tutorial/add-products.md
     - tutorial/add-customers.md
     - tutorial/add-db-analytics.md
-    - Give customers preferences across products: tutorial/add-customer-prefs.md
+    - tutorial/add-customer-prefs.md
     - Model data entry errors: tutorial/model-data-entry-errors.md
     - Model customer churn: tutorial/model-customer-churn.md
     - Run marketing campaigns: tutorial/run-marketing-campaigns.md
     - Acquire another lemonade stand: tutorial/acquire-lemonade-stand.md
 
   - Core concepts:
-    - Overview: core-concepts/overview.md
-    - Entity: core-concepts/entity.md
-    - Event: core-concepts/event.md
-    - Simulation: core-concepts/simulation.md
+    - core-concepts/overview.md
+    - core-concepts/simulation.md
+    - core-concepts/entity.md
+    - core-concepts/emitter.md
+    - core-concepts/event.md
+    - core-concepts/action.md
   - Recipes:
     - Changing entity types: examples/example2.md
     - Event formats that must be normalized: examples/example2.md
-    - y
+    - recipes/overwrite-update.md
     - z
   - Contributing: contributing.md

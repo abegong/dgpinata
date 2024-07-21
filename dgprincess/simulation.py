@@ -96,21 +96,26 @@ class Simulation(BaseModel):
 
         # Create all the tables that we'll need
         for event_type in self.event_types:
-            sql.execute(event_type.schema_sql)
+            sql.execute(event_type.get_create_table_sql())
         
-        # for entity_type in self.entity_types:
-        #     if entity_type.schema is None:
-        #         continue
-        #     sql.execute(entity_type.schema)
+        for entity_type in self.entity_types:
+            if entity_type.table_name is None:
+                continue
+            sql.execute(entity_type.get_create_table_sql())
         
         # Insert all the data
+        #!!! If multiple objects are written to the same table, this will sort them by type, then timestamp.
+        #!!! Instead, they should be sorted by timestamp
         for event_type, events in self.events.items():
             for event in events:
-                sql.execute(event.insert_sql)
-        
-        # for entity_type, entities in self.entities.items():
-        #     for entity in entities:
-        #         sql.execute(entity.insert)
+                sql.execute(event.get_insert_sql())
+
+        for entity_type in self.entity_types:
+            if entity_type.table_name is None:
+                continue
+
+            for entity in self.entities[entity_type.__name__]:
+                sql.execute(entity.get_insert_sql())
 
         sql.commit()
 

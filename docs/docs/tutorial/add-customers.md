@@ -14,7 +14,6 @@ class Customer(dgp.StaticEntity):
     customer_id: str = Field(default_factory=lambda: str(uuid4()))
     first_name: str = Field(default_factory=faker.first_name)
     last_name: str = Field(default_factory=faker.last_name)
-    reward_points: int = 0
     created_at: int
 
     default_values = []
