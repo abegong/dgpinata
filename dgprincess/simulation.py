@@ -165,7 +165,7 @@ class Simulation(BaseModel):
     def instantiate_event(
         self,
         event_type_name: str,
-        parent_entity: Entity,
+        parent: Entity,
         parameter_builders: Dict[str, ParameterBuilder],
         timestamp: int,
     ) -> Event:

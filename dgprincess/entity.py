@@ -30,7 +30,7 @@ class Entity(Emittable):
 
         for emitter in self.emitters.values():
             emitted_events, emitted_actions = emitter.emit(
-                parent_entity=self,
+                parent=self,
                 simulation=self.simulation,
                 timestamp=timestamp,
             )

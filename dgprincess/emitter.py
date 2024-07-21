@@ -83,7 +83,7 @@ class IntervalEmitter(Emitter):
         )
     
     def emit(self,
-        parent_entity: "Entity",
+        parent: "Entity",
         simulation: "Simulation",
         timestamp: int,
     ) -> List["Event"]:
@@ -95,7 +95,7 @@ class IntervalEmitter(Emitter):
         # Instantiate
         new_event = simulation.instantiate_event(
             event_type_name=self.event_type_name,
-            parent_entity=parent_entity,
+            parent=parent,
             parameter_builders=self.parameter_builders,
             timestamp=timestamp,
         )
