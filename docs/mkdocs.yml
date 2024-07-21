@@ -36,7 +36,8 @@ markdown_extensions:
   
 nav:
   - Home: index.md
-  - Quickstart: about.md
+  - Quickstart: quickstart.md
+
   - Tutorial:
     - tutorial/hello-lemonade.md
     - tutorial/add-products.md
@@ -55,9 +56,10 @@ nav:
     - core-concepts/emitter.md
     - core-concepts/event.md
     - core-concepts/action.md
+
   - Recipes:
-    - Changing entity types: examples/example2.md
-    - Event formats that must be normalized: examples/example2.md
+    - Simulating changes to the DGP: recipes/simulating-dgp-changes.md
+    - Simulating database migrations: recipes/simulating-db-migrations.md
     - recipes/overwrite-update.md
-    - z
+
   - Contributing: contributing.md

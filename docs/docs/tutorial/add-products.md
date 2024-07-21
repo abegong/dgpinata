@@ -43,7 +43,7 @@ class Sale(dgp.Event):
 
 This is the same as before, but adds fields for `sale_id` and `product_id`. `sale_id` is automatically populated with a unique id when the event is created, and `product_id` is a reference to the `product_id` of the product being sold.
 
-Finally, we'll add a `Stand` entity type to represent the stands that sell the products. In our simulation, `Stands` don't have any attributes, but they can generate `Sales`.
+Finally, we'll update the `Stand` entity type, to incorporate `Products` into the logic for emitting `Sales` events.
 
 ```python
 class Stand(dgp.Entity):
