@@ -14,5 +14,4 @@ Entities are the primary building blocks of a simulation. They represent the
 The Entity class hierarchy is:
 
 * Entity
-* StaticEntity
 * ...

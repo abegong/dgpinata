@@ -44,13 +44,3 @@ class Entity(Emittable):
         return [], []
         
     default_values: ClassVar[Optional[List[Dict]]] = None
-
-
-class StaticEntity(Entity):
-    """StaticEntity is a subclass of Entity that does not change over time.
-    
-    They are initialized at the beginning of the simulation and do not change or emit events.
-    """
-
-    def update(self, timestamp: int) -> Tuple[List[Event], List[Entity]]:
-        return [], []

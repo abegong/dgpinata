@@ -10,7 +10,7 @@ import dgprincess as dgp
 
 faker = Faker()
 
-class Customer(dgp.StaticEntity):
+class Customer(dgp.Entity):
     customer_id: str = Field(default_factory=lambda: str(uuid4()))
     first_name: str = Field(default_factory=faker.first_name)
     last_name: str = Field(default_factory=faker.last_name)
@@ -25,7 +25,7 @@ class Sale(dgp.Event):
     amount: int
     timestamp: int
 
-class Product(dgp.StaticEntity):
+class Product(dgp.Entity):
     product_id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     price: float

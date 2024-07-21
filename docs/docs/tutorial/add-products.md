@@ -13,7 +13,7 @@ import dgprincess as dgp
 We'll also add a `Product` entity type to represent the products. In our simulation, `Products` have a `product_id`, a `name`, and a `price`.
 
 ```python
-class Product(dgp.StaticEntity):
+class Product(dgp.Entity):
     product_id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     price: float
