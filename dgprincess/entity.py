@@ -21,7 +21,7 @@ class Entity(Emittable):
         """Alias for self.simulation"""
         return self.simulation
 
-    def update(self, elapsed_time: int) -> Tuple[List[Event], List["Entity"]]:
+    def update(self, timestamp: int) -> Tuple[List[Event], List["Entity"]]:
         """Update the entity based on the elapsed time."""
 
         raise NotImplementedError
@@ -35,5 +35,5 @@ class StaticEntity(Entity):
     They are initialized at the beginning of the simulation and do not change or emit events.
     """
 
-    def update(self, elapsed_time: int) -> Tuple[List[Event], List[Entity]]:
+    def update(self, timestamp: int) -> Tuple[List[Event], List[Entity]]:
         return [], []

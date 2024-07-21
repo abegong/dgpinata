@@ -46,7 +46,8 @@ class Simulation(BaseModel):
     events: Dict[str, List[Event]] = {}
     tables: List[str] = []
 
-    timer: int = Field(0, title="Current time in the simulation")
+    timestamp: int = Field(0, title="Current time in the simulation")
+    interval: int = 3600
     rand_seed: Optional[int] = None
 
     def __init__(self, *args, **kwargs):
@@ -78,10 +79,10 @@ class Simulation(BaseModel):
         if self.rand_seed is not None:
             random.seed(self.rand_seed)
 
-    def run(self, steps: int, increment: int=1):
+    def run(self, steps: int):
         for i in range(steps):
             self._update_entities()
-            self.timer += increment
+            self.timestamp += self.interval
 
         return self.get_report()
     
@@ -139,10 +140,10 @@ class Simulation(BaseModel):
     def _update_entities(self):
         for entity_type in self.entity_types:
             for entity in self.entities[entity_type.__name__]:
-                self._update_entity(entity_type, entity)
+                self._update_entity(entity)
     
-    def _update_entity(self, entity_type: Type[Entity], entity: Entity):
-        new_events, new_entities = entity.update(self.timer)
+    def _update_entity(self, entity: Entity):
+        new_events, new_entities = entity.update(timestamp=self.timestamp)
 
         for event in new_events:
             self.events[event.__class__.__name__].append(event)
