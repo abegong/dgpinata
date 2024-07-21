@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
+import random
 import sqlite3
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Optional, Type
 
 from dgprincess.entity import Entity
 from dgprincess.event import Event
@@ -46,6 +47,7 @@ class Simulation(BaseModel):
     tables: List[str] = []
 
     timer: int = Field(0, title="Current time in the simulation")
+    rand_seed: Optional[int] = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -54,7 +56,7 @@ class Simulation(BaseModel):
         for entity_type in self.entity_types:
             self.entities[entity_type.__name__] = []
 
-            if hasattr(entity_type, "default_values") and entity_type.default_values != []:
+            if hasattr(entity_type, "default_values") and entity_type.default_values is not None:
 
                 for default_values in entity_type.default_values:
                     default_values["simulation"] = self
@@ -73,8 +75,8 @@ class Simulation(BaseModel):
         for event_type in self.event_types:
             self.events[event_type.__name__] = []
 
-        # Initialize timer
-        self.timer = 0
+        if self.rand_seed is not None:
+            random.seed(self.rand_seed)
 
     def run(self, steps: int, increment: int=1):
         for i in range(steps):
@@ -141,4 +143,4 @@ class Simulation(BaseModel):
             self.events[event.__class__.__name__].append(event)
 
         for new_entity in new_entities:
-            self.entities[entity_type.__name__].append(new_entity)
+            self.entities[new_entity.__class__.__name__].append(new_entity)

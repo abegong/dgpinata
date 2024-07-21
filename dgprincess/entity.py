@@ -1,6 +1,6 @@
 
 from pydantic import BaseModel, Field
-from typing import ClassVar, Dict, List, Tuple, TYPE_CHECKING
+from typing import ClassVar, Dict, List, Optional, Tuple, TYPE_CHECKING
 from uuid import uuid4
 
 from dgprincess.event import Event
@@ -29,7 +29,7 @@ class Entity(BaseModel):
     def state(self):
         return self.dict()
     
-    default_values: ClassVar[List[Dict]] = []    
+    default_values: ClassVar[Optional[List[Dict]]] = None
 
 
 class StaticEntity(Entity):
