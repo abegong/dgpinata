@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Optional, Type
 from dgprincess.entity import Entity
 from dgprincess.event import Event
 from dgprincess.emitter import ParameterBuilder
+from dgprincess.action import Action, ActionType
+from dgprincess.chooser import Chooser
 
 class SimulationReport(BaseModel):
     simulation: "Simulation" = Field(..., title="The simulation that this report is based on")
@@ -144,13 +146,30 @@ class Simulation(BaseModel):
                 self._update_entity(entity)
     
     def _update_entity(self, entity: Entity):
-        new_events, new_entities = entity.update(timestamp=self.timestamp)
+        new_actions : List[Action] = entity.update(timestamp=self.timestamp)
 
-        for event in new_events:
-            self.events[event.__class__.__name__].append(event)
+        for action in new_actions:
+            self._process_action(action)
 
-        for new_entity in new_entities:
-            self.entities[new_entity.__class__.__name__].append(new_entity)
+    def _process_action(self, action: Action):
+        if action.action_type == ActionType.AddEvent:
+            new_event = self._instantiate_event(
+                event_type_name=action.event_type_name,
+                parameter_builders=action.parameter_builders,
+                parent=action.parent,
+                timestamp=action.timestamp,
+            )
+            self.events[action.event_type_name].append(new_event)
+
+        elif action.action_type == ActionType.AddEntity:
+            new_entity = self._instantiate_entity(
+                entity_type_name=action.entity_type_name,
+                parameter_builders=action.parameter_builders,
+                parent=action.parent,
+                timestamp=action.timestamp,
+            )
+            self.entities[action.entity_type_name].append(new_entity)
+
     
     def _get_event_type_by_name(
         self,
@@ -162,24 +181,31 @@ class Simulation(BaseModel):
 
         raise ValueError(f"event_type with name {event_type_name} not found.")
 
-    def instantiate_event(
+    def _get_entity_type_by_name(
+        self,
+        entity_type_name:str        
+    ) -> Type:
+        for entity_type in self.entity_types:
+            if entity_type.__name__ == entity_type_name:
+                return entity_type
+
+        raise ValueError(f"entity_type with name {entity_type_name} not found.")
+
+
+    def _instantiate_event(
         self,
         event_type_name: str,
-        parent: Entity,
         parameter_builders: Dict[str, ParameterBuilder],
+        parent: Entity,
         timestamp: int,
     ) -> Event:
         event_type = self._get_event_type_by_name(event_type_name=event_type_name)
 
-        # Iterate over parameter_builders to build up the keyword args for the new event
-        parameters = {}
-        for name, pb in parameter_builders.items():
-            if pb.eval_str is not None:
-                new_param = eval(pb.eval_str)
-            else:
-                new_param = pb.value
-
-            parameters[pb.name] = new_param
+        parameters = self._build_parameters(
+            parameter_builders=parameter_builders,
+            parent=parent,
+            timestamp=timestamp,
+        )
 
         # Instatiate the new event
         new_event = event_type(
@@ -187,3 +213,49 @@ class Simulation(BaseModel):
         )
 
         return new_event
+    
+    def _instantiate_entity(
+        self,
+        entity_type_name: str,
+        parameter_builders: Dict[str, ParameterBuilder],
+        parent: Entity,
+        timestamp: int,
+    ) -> Event:
+        entity_type = self._get_entity_type_by_name(entity_type_name)
+
+        parameters = self._build_parameters(
+            parameter_builders=parameter_builders,
+            parent=parent,
+            timestamp=timestamp,
+        )
+
+        # Instatiate the new event
+        new_event = entity_type(
+            simulation=self,
+            **parameters
+        )
+
+        return new_event
+    
+    def _build_parameters(self, parameter_builders, parent, timestamp) -> Dict:
+        """Iterate over parameter_builders to build up the keyword args for an Event or Entity"""
+
+        parameters = {}
+        sim = self
+        
+        for name, pb in parameter_builders.items():
+            if pb.eval_str is not None:
+                new_param = eval(pb.eval_str)
+
+            elif isinstance(pb.value, Chooser):
+                new_param = pb.value.invoke(
+                    sim=sim,
+                    parent=parent,
+                    timestamp=timestamp,
+                )
+            else:
+                new_param = pb.value
+
+            parameters[pb.name] = new_param        
+        
+        return parameters

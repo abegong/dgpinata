@@ -17,30 +17,27 @@ class Entity(Emittable):
         "simulation"
     ]
     emitters: Dict[str, "Emitter"] = {}
+    default_values: ClassVar[Optional[List[Dict]]] = None
 
     @property
     def sim(self):
         """Alias for self.simulation"""
         return self.simulation
 
-    def update(self, timestamp: int) -> Tuple[List[Event], List["Entity"]]:
+    def update(self, timestamp: int) -> List["Action"]:
         """Update the entity based on the elapsed time."""
-        new_events = []
         new_actions = []
 
         for emitter in self.emitters.values():
-            emitted_events, emitted_actions = emitter.emit(
+            emitted_actions = emitter.emit(
                 parent=self,
-                simulation=self.simulation,
                 timestamp=timestamp,
             )
-            new_events.extend(emitted_events)
             new_actions.extend(emitted_actions)
 
-        more_new_events, more_new_entities = self._update(timestamp)
-        return new_events + more_new_events, new_actions + more_new_entities
+        more_new_actions = self._update(timestamp)
+        return new_actions + more_new_actions
     
-    def _update(self, timestamp: int) -> Tuple[List[Event], List["Entity"]]:
-        return [], []
+    def _update(self, timestamp: int) -> List["Action"]:
+        return []
         
-    default_values: ClassVar[Optional[List[Dict]]] = None

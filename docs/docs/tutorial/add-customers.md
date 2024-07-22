@@ -3,6 +3,7 @@
 ```python
 from faker import Faker
 import random
+from typing import Dict
 from uuid import uuid4
 from pydantic import Field
 
@@ -16,7 +17,23 @@ class Customer(dgp.Entity):
     last_name: str = Field(default_factory=faker.last_name)
     created_at: int
 
-    default_values = []
+    emitters : Dict = {
+        "new_sale" : dgp.IntervalEmitter.from_params(
+            event_type_name="Sale",
+            skip_probability=0.90,
+            customer_id = "parent.customer_id",
+            product_id = dgp.RandomObjectAttributeChooser(
+                object_eval_str='sim.entities["Product"]',
+                attribute="product_id"
+            ),
+            amount = 1,
+            timestamp = "timestamp",
+        )
+    }
+
+    default_values = [
+        {"first_name": "Alfred", "last_name": "Adams", "created_at": 0}
+    ]
 
 class Sale(dgp.Event):
     sale_id: str = Field(default_factory=lambda: str(uuid4()))
@@ -38,25 +55,13 @@ class Product(dgp.Entity):
 
 class Stand(dgp.Entity):
 
-    def update(self, timestamp):
-        if random.random() < 0.2 or len(self.sim.entities["Customer"]) == 0:
-            customer = Customer(
-                simulation = self.sim,
-                created_at = timestamp,
-            )
-            new_customers = [customer]
-        
-        else:
-            customer = random.choice(self.sim.entities["Customer"])
-            new_customers = []
-        
-        new_sale = Sale(
-            product_id = random.choice(self.sim.entities["Product"]).product_id,
-            customer_id = customer.customer_id,
-            amount = 1,
-            timestamp = timestamp,
-        )
-        return [new_sale], new_customers
+    emitters : Dict = {
+        "new_customer" : dgp.IntervalEmitter.from_params(
+            entity_type_name="Customer",
+            skip_probability=0.8,
+            created_at="timestamp",
+        )        
+    }
 
 from dgprincess.simulation import Simulation
 Product.model_rebuild()
@@ -75,11 +80,11 @@ print(sim.run(steps=100))
 assert str(sim.get_report()) == """\
 === Entities ===
   Stand: 1
-  Customer: 21
+  Customer: 22
   Product: 3
 
 === Events ===
-  Sale: 100
+  Sale: 103
 """
 ```
 -->

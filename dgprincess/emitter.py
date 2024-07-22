@@ -3,6 +3,8 @@ from pydantic import BaseModel
 import random
 from typing import Any, Dict, List, Optional, Union
 
+from dgprincess.action import Action, AddEvent, AddEntity
+
 class NormalDistributionParams(BaseModel):
     mean: float
     standard_deviation: float
@@ -19,10 +21,11 @@ class ParameterBuilder(BaseModel):
 
 
 class Emitter(BaseModel):
-    event_type_name: str
+    event_type_name: Optional[str] = None
+    entity_type_name: Optional[str] = None
 
-    def emit(self, timestamp: int, entity):
-        return [], []
+    # def emit(self, parent: "Entity", timestamp: int):
+    #     return []
 
 class IntervalSpacingOption(str, Enum):
     START="start"
@@ -44,10 +47,11 @@ class IntervalEmitter(Emitter):
     parameter_builders: Dict[str, ParameterBuilder]
 
     @classmethod
-    def define(
+    def from_params(
         cls,
-        event_type_name: str,
-        interval: Union[int, str],
+        event_type_name: Optional[str] = None,
+        entity_type_name: Optional[str] = None,
+        interval: Optional[Union[int, str]] = None,
         skip_probability: float = 0.0,
         spacing: Optional[Union[str, IntervalSpacingOption]] = IntervalSpacingOption.START,
         normal_offset: Optional[NormalDistributionParams] = None,
@@ -55,10 +59,34 @@ class IntervalEmitter(Emitter):
         **kwargs,
     ) -> "IntervalEmitter":
         
-        if type(interval) == str:
+        if entity_type_name is None and event_type_name is None:
+            raise ValueError("entity_type_name and event_type_name cannot both be None.")
+
+        if entity_type_name is not None and event_type_name is not None:
+            raise ValueError("entity_type_name and event_type_name cannot both be populated.")
+
+        if interval is None:
+            interval = ParameterBuilder(name="interval", eval_str="sim.interval")
+
+        elif type(interval) == str:
             interval = ParameterBuilder(name="interval", eval_str=interval)
 
         # Instantiate parameter builders
+        parameter_builders = cls._define_parameter_builders(**kwargs)
+
+        return cls(
+            event_type_name=event_type_name,
+            entity_type_name=entity_type_name,
+            interval=interval,
+            skip_probability=skip_probability,
+            spacing=spacing,
+            normal_offset=normal_offset,
+            uniform_offset=uniform_offset,
+            parameter_builders=parameter_builders,
+        )
+
+    @classmethod
+    def _define_parameter_builders(cls, **kwargs):
         parameter_builders = {}
         for parameter_name, value in kwargs.items():
             if type(value) == str:
@@ -71,46 +99,31 @@ class IntervalEmitter(Emitter):
                     name=parameter_name,
                     value=value,
                 )
-
-        return  cls(
-            event_type_name=event_type_name,
-            interval=interval,
-            skip_probability=skip_probability,
-            spacing=spacing,
-            normal_offset=normal_offset,
-            uniform_offset=uniform_offset,
-            parameter_builders=parameter_builders,
-        )
+        return parameter_builders
     
     def emit(self,
         parent: "Entity",
-        simulation: "Simulation",
         timestamp: int,
-    ) -> List["Event"]:
+    ) -> List[Action]:
+        #!!! Ignore spacing and interval_logic for now
+
         if self.skip_probability > 0 and random.random() < self.skip_probability:
-            return [], []
+            return []
         
-        # Ignore the spacing for now
-
-        # Instantiate
-        new_event = simulation.instantiate_event(
-            event_type_name=self.event_type_name,
-            parent=parent,
-            parameter_builders=self.parameter_builders,
-            timestamp=timestamp,
-        )
-
-        return [new_event], []
+        if self.event_type_name is not None:
+            new_action = AddEvent(
+                event_type_name=self.event_type_name,
+                parameter_builders=self.parameter_builders,
+                parent=parent,
+                timestamp=timestamp,
+            )
         
+        elif self.entity_type_name is not None:
+            new_action = AddEntity(
+                entity_type_name=self.entity_type_name,
+                parameter_builders=self.parameter_builders,
+                parent=parent,
+                timestamp=timestamp,
+            )
 
-#     created_at="timestamp",
-# ),
-# "add_sale": IntervalEmitter(
-#     event_type=Sale,
-#     interval=3600,
-#     -- offset=lambda: random.randint(),
-#     product_id=RandomChoice("sim.Entities['Product']"),
-#     customer_id=RandomChoice("sim.Entities['Customer']"),
-#     amount=1,
-#     timestamp="timestamp",
-
+        return [new_action]

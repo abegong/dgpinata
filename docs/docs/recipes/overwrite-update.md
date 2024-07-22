@@ -1,21 +1,34 @@
 # Overwrite an `Entity`'s `update` method
 
-You can overwrite the `update` method for an `Entity` in order to get finer-grained control over the logic for creating Events and Actions.
+You can overwrite the `_update` method for an `Entity` in order to get finer-grained control over the logic for creating Events and Actions.
 
 ```python
 import dgprincess as dgp
+from dgprincess.action import AddEvent
+from dgprincess.emitter import ParameterBuilder
 
 class Sale(dgp.Event):
     amount: int
     timestamp: int
 
 class Stand(dgp.Entity):
-    def update(self, timestamp):
-        new_sale = Sale(
-            amount = 1,
-            timestamp = timestamp,
+    def _update(self, timestamp):
+        new_action = AddEvent(
+            event_type_name="Sale",
+            parameter_builders={
+                "amount" : ParameterBuilder(
+                    name="amount",
+                    value=1
+                ),
+                "timestamp" : ParameterBuilder(
+                    name="timestamp",
+                    eval_str="timestamp"
+                )
+            },
+            parent=self,
+            timestamp=timestamp,
         )
-        return [new_sale], []
+        return [new_action]
 
 sim = dgp.Simulation(
     event_types=[Sale],

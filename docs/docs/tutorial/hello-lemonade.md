@@ -24,8 +24,7 @@ In order to emit an `Event`, we need an `Entity`. In this case, we define the `S
 ```python
 class Stand(dgp.Entity):
     emitters : Dict = {
-        "new_sale": dgp.IntervalEmitter.define(
-            interval="self.interval",
+        "new_sale": dgp.IntervalEmitter.from_params(
             event_type_name="Sale",
             amount=1,
             timestamp="timestamp",
@@ -33,9 +32,7 @@ class Stand(dgp.Entity):
     }
 ```
 
- To keep things simple for now, `Stand` doesn't have any properties of its own. It only has an `update` method that returns a list of `Events`, and an empty list. (The empty list is for creating additional `Entities`. We'll worry about it later.)
- 
- For now, the list of events is just a single `Sale` in every update cycle. `amount` is always 1, and the `timestamp` is just an integer of the update cycle in which the sale occurred.
+ To keep things simple for now, `Stand` doesn't have any properties of its own. It only has `emitters`: a dictionary with a single entry that enables our `Stand` to create `Sale` events.  For now, we just want to create a single `Sale` in every update cycle. `amount` is always 1, and the `timestamp` is just an integer.
 
 Finally, we create a `Simulation` object and run it.
 

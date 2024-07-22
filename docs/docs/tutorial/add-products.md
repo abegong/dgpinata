@@ -4,6 +4,7 @@ Next, we'll add more products to the simulation. In this section, we're going to
 
 ```python
 import random
+from typing import Dict
 from uuid import uuid4
 from pydantic import Field
 
@@ -48,14 +49,17 @@ Finally, we'll update the `Stand` entity type, to incorporate `Products` into th
 ```python
 class Stand(dgp.Entity):
 
-    def update(self, timestamp):
-        chosen_product = random.choice(self.simulation.entities["Product"])
-        new_sale = Sale(
-            product_id = chosen_product.product_id,
+    emitters : Dict = {
+        "new_sale" : dgp.IntervalEmitter.from_params(
+            event_type_name="Sale",
+            product_id = dgp.RandomObjectAttributeChooser(
+                object_eval_str='sim.entities["Product"]',
+                attribute="product_id"
+            ),
             amount = 1,
-            timestamp = timestamp,
+            timestamp = "timestamp",
         )
-        return [new_sale], []
+    }
 ```
 
 ```python

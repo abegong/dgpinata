@@ -6,7 +6,7 @@ def test_smoke_interval_emitter():
         foo: int
         bar: int
 
-    emitter = IntervalEmitter.define(
+    emitter = IntervalEmitter.from_params(
         event_type_name="MyEvent",
         interval=3600,
         offset=0,
