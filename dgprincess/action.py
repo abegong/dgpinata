@@ -3,19 +3,19 @@ from typing import Any, Dict, Type, Union
 
 from dgprincess.emittable import Emittable
 
-class ActionType(str, Enum):
+class MessageType(str, Enum):
     AddEvent = "AddEvent"
     AddEntity = "AddEntity"
     # RemoveEntity = "RemoveEntity"
     # ChangeEntityType = "ChangeEntityType"
     # SendMessage = "SendMessage"
 
-class Action(Emittable):
-    """Abstract base class for all Actions"""
-    action_type: ActionType
+class Message(Emittable):
+    """Abstract base class for all Messages"""
+    action_type: MessageType
 
-class AddEvent(Action):
-    action_type: ActionType = ActionType.AddEvent
+class AddEvent(Message):
+    action_type: MessageType = MessageType.AddEvent
     
     event_type_name: str
     parameter_builders: Dict[str, Any]#Union[Any, "ParameterBuilder"]]
@@ -37,25 +37,25 @@ class AddEvent(Action):
             timestamp=timestamp,
         )
 
-class AddEntity(Action):
-    action_type: ActionType = ActionType.AddEntity
+class AddEntity(Message):
+    action_type: MessageType = MessageType.AddEntity
 
     entity_type_name: str
     parameter_builders: Dict[str, Any]#Union[Any, "ParameterBuilder"]]
     parent: Any#"Entity"
     timestamp: int
 
-# class RemoveEntity(Action):
-#     action_type = ActionType.RemoveEntity
+# class RemoveEntity(Message):
+#     action_type = MessageType.RemoveEntity
 #     selection_params: Dict
 
-# class ChangeEntityType(Action):
-#     action_type = ActionType.ChangeEntityType
+# class ChangeEntityType(Message):
+#     action_type = MessageType.ChangeEntityType
 #     selection_params: Dict
 #     new_type: Type
 #     initialization_params: Dict
 
-# class SendMessage(Action):
-#     action_type = ActionType.SendMessage
+# class SendMessage(Message):
+#     action_type = MessageType.SendMessage
 #     selection_params: Dict
 #     message_params: Dict

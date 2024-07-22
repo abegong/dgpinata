@@ -1,6 +1,6 @@
 # Overwrite an `Entity`'s `update` method
 
-You can overwrite the `_update` method for an `Entity` in order to get finer-grained control over the logic for creating Events and Actions.
+You can overwrite the `_update` method for an `Entity` in order to get finer-grained control over the logic for creating Mess.
 
 ```python
 import dgprincess as dgp

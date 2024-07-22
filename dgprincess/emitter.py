@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import random
 from typing import Any, Dict, List, Optional, Union
 
-from dgprincess.action import Action, AddEvent, AddEntity
+from dgprincess.action import Message, AddEvent, AddEntity
 
 class NormalDistributionParams(BaseModel):
     mean: float
@@ -104,7 +104,7 @@ class IntervalEmitter(Emitter):
     def emit(self,
         parent: "Entity",
         timestamp: int,
-    ) -> List[Action]:
+    ) -> List[Message]:
         #!!! Ignore spacing and interval_logic for now
 
         if self.skip_probability > 0 and random.random() < self.skip_probability:

@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Type
 from dgprincess.entity import Entity
 from dgprincess.event import Event
 from dgprincess.emitter import ParameterBuilder
-from dgprincess.action import Action, ActionType
+from dgprincess.action import Message, MessageType
 from dgprincess.chooser import Chooser
 
 class SimulationReport(BaseModel):
@@ -146,13 +146,13 @@ class Simulation(BaseModel):
                 self._update_entity(entity)
     
     def _update_entity(self, entity: Entity):
-        new_actions : List[Action] = entity.update(timestamp=self.timestamp)
+        new_actions : List[Message] = entity.update(timestamp=self.timestamp)
 
         for action in new_actions:
             self._process_action(action)
 
-    def _process_action(self, action: Action):
-        if action.action_type == ActionType.AddEvent:
+    def _process_action(self, action: Message):
+        if action.action_type == MessageType.AddEvent:
             new_event = self._instantiate_event(
                 event_type_name=action.event_type_name,
                 parameter_builders=action.parameter_builders,
@@ -161,7 +161,7 @@ class Simulation(BaseModel):
             )
             self.events[action.event_type_name].append(new_event)
 
-        elif action.action_type == ActionType.AddEntity:
+        elif action.action_type == MessageType.AddEntity:
             new_entity = self._instantiate_entity(
                 entity_type_name=action.entity_type_name,
                 parameter_builders=action.parameter_builders,

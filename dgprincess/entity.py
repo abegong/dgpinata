@@ -24,7 +24,7 @@ class Entity(Emittable):
         """Alias for self.simulation"""
         return self.simulation
 
-    def update(self, timestamp: int) -> List["Action"]:
+    def update(self, timestamp: int) -> List["Message"]:
         """Update the entity based on the elapsed time."""
         new_actions = []
 
@@ -38,6 +38,6 @@ class Entity(Emittable):
         more_new_actions = self._update(timestamp)
         return new_actions + more_new_actions
     
-    def _update(self, timestamp: int) -> List["Action"]:
+    def _update(self, timestamp: int) -> List["Message"]:
         return []
         
