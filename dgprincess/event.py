@@ -1,6 +1,6 @@
-from dgprincess.emittable import Emittable
+from dgprincess.emittable import Recordable
 
-class Event(Emittable):
+class Event(Recordable):
     """An event that can be recorded in the simulation DB."""
 
     pass

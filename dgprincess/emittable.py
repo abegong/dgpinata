@@ -7,7 +7,7 @@ annotation_type_lookup = {
     float: "FLOAT",
 }
 
-class Emittable(BaseModel):
+class Recordable(BaseModel):
     """An event that can be recorded in the simulation DB."""
 
     table_name: ClassVar[str] = None

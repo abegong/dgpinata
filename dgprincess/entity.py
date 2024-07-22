@@ -4,16 +4,16 @@ from typing import ClassVar, Dict, List, Optional, Tuple, TYPE_CHECKING
 from uuid import uuid4
 
 from dgprincess.event import Event
-from dgprincess.emittable import Emittable
+from dgprincess.emittable import Recordable
 from dgprincess.emitter import Emitter
 if TYPE_CHECKING:
     from dgprincess.simulation import Simulation
 
-class Entity(Emittable):
+class Entity(Recordable):
     """Entities can have state and emit events."""
 
     simulation: "Simulation" = Field(..., title="The simulation that this entity belongs to")
-    column_block_list = Emittable.column_block_list + [
+    column_block_list = Recordable.column_block_list + [
         "simulation"
     ]
     emitters: Dict[str, "Emitter"] = {}

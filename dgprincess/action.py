@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Dict, Type, Union
 
-from dgprincess.emittable import Emittable
+from dgprincess.emittable import Recordable
 
 class MessageType(str, Enum):
     AddEvent = "AddEvent"
@@ -10,7 +10,7 @@ class MessageType(str, Enum):
     # ChangeEntityType = "ChangeEntityType"
     # SendMessage = "SendMessage"
 
-class Message(Emittable):
+class Message(Recordable):
     """Abstract base class for all Messages"""
     action_type: MessageType
 
