@@ -63,10 +63,6 @@ class Stand(dgp.Entity):
         )        
     }
 
-from dgprincess.simulation import Simulation
-Product.model_rebuild()
-Customer.model_rebuild()
-
 sim = dgp.Simulation(
     event_types=[Sale],
     entity_types=[Stand, Customer, Product],

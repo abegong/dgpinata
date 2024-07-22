@@ -8,7 +8,7 @@ annotation_type_lookup = {
 }
 
 class Recordable(BaseModel):
-    """An event that can be recorded in the simulation DB."""
+    """An object that can be recorded in the simulation DB."""
 
     table_name: ClassVar[str] = None
     column_block_list: ClassVar[List[str]] = [

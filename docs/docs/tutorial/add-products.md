@@ -63,11 +63,6 @@ class Stand(dgp.Entity):
 ```
 
 ```python
-from dgprincess.simulation import Simulation
-Product.model_rebuild()
-```
-
-```python
 sim = dgp.Simulation(
     event_types=[Sale],
     entity_types=[Stand, Product],
