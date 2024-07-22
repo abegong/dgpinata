@@ -170,28 +170,14 @@ class Simulation(BaseModel):
             )
             self.entities[action.entity_type_name].append(new_entity)
 
+    @property
+    def event_type_lookup(self):
+        return dict([(et.__name__, et) for et in self.event_types])
+
+    @property
+    def entity_type_lookup(self):
+        return dict([(et.__name__, et) for et in self.entity_types])
     
-    def _get_event_type_by_name(
-        self,
-        event_type_name:str        
-    ) -> Type:
-        for event_type in self.event_types:
-            if event_type.__name__ == event_type_name:
-                return event_type
-
-        raise ValueError(f"event_type with name {event_type_name} not found.")
-
-    def _get_entity_type_by_name(
-        self,
-        entity_type_name:str        
-    ) -> Type:
-        for entity_type in self.entity_types:
-            if entity_type.__name__ == entity_type_name:
-                return entity_type
-
-        raise ValueError(f"entity_type with name {entity_type_name} not found.")
-
-
     def _instantiate_event(
         self,
         event_type_name: str,
@@ -199,7 +185,7 @@ class Simulation(BaseModel):
         parent: Entity,
         timestamp: int,
     ) -> Event:
-        event_type = self._get_event_type_by_name(event_type_name=event_type_name)
+        event_type = self.event_type_lookup[event_type_name]
 
         parameters = self._build_parameters(
             parameter_builders=parameter_builders,
@@ -221,7 +207,7 @@ class Simulation(BaseModel):
         parent: Entity,
         timestamp: int,
     ) -> Event:
-        entity_type = self._get_entity_type_by_name(entity_type_name)
+        entity_type = self.entity_type_lookup[entity_type_name]
 
         parameters = self._build_parameters(
             parameter_builders=parameter_builders,
