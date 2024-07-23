@@ -22,20 +22,20 @@ class AddEvent(Message):
     parent: Any#"Entity"
     timestamp: int
 
-    @classmethod
-    def from_params(
-        cls,
-        event_type_name:str,
-        parent:"Entity",
-        timestamp:int,
-        **kwargs
-    ):
-        return cls(
-            event_type_name=event_type_name,
-            parameter_builders=kwargs,
-            parent=parent,
-            timestamp=timestamp,
-        )
+    # @classmethod
+    # def from_params(
+    #     cls,
+    #     event_type_name:str,
+    #     parent:"Entity",
+    #     timestamp:int,
+    #     **kwargs
+    # ):
+    #     return cls(
+    #         event_type_name=event_type_name,
+    #         parameter_builders=kwargs,
+    #         parent=parent,
+    #         timestamp=timestamp,
+    #     )
 
 class AddEntity(Message):
     action_type: MessageType = MessageType.AddEntity
