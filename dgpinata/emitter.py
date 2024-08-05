@@ -13,6 +13,8 @@ class UniformDistributionParams(BaseModel):
     min: int
     max: int
 
+class ExponentialDistributionParams(BaseModel):
+    lambda_: float
 
 class ParameterBuilder(BaseModel):
     name: str
@@ -24,14 +26,18 @@ class Emitter(BaseModel):
     event_type_name: Optional[str] = None
     entity_type_name: Optional[str] = None
 
-    # def emit(self, parent: "Entity", timestamp: int):
-    #     return []
+    def emit(
+        self,
+        parent: "Entity",
+        prev_timestamp: int,
+        timestamp: int
+    ) -> List[Message]:
+        raise NotImplementedError
+
 
 class IntervalSpacingOption(str, Enum):
     START="start"
-    CONSTANT="offset"
     UNIFORM="uniform"
-    EXPONENTIAL="exponential"
 
 
 class IntervalEmitter(Emitter):
@@ -59,6 +65,7 @@ class IntervalEmitter(Emitter):
     constant_offset: Optional[int] = None
     normal_offset: Optional[NormalDistributionParams] = None
     uniform_offset: Optional[UniformDistributionParams] = None
+    exponential_offset: Optional[ExponentialDistributionParams] = None
     parameter_builders: Dict[str, ParameterBuilder]
 
     @classmethod
@@ -72,6 +79,7 @@ class IntervalEmitter(Emitter):
         constant_offset: Optional[int] = None,
         normal_offset: Optional[NormalDistributionParams] = None,
         uniform_offset: Optional[UniformDistributionParams] = None,
+        exponential_offset: Optional[ExponentialDistributionParams] = None,
         **kwargs,
     ) -> "IntervalEmitter":
         
@@ -99,6 +107,7 @@ class IntervalEmitter(Emitter):
             constant_offset=constant_offset,
             normal_offset=normal_offset,
             uniform_offset=uniform_offset,
+            exponential_offset=exponential_offset,
             parameter_builders=parameter_builders,
         )
 
@@ -148,7 +157,13 @@ class IntervalEmitter(Emitter):
 
         start_time_list = []
         for i in range(prev_timestamp, timestamp, interval):
-            start_time_list.append(i)
+
+            if self.spacing == IntervalSpacingOption.START:
+                start_time_list.append(i)
+            elif self.spacing == IntervalSpacingOption.UNIFORM:
+                start_time_list.append(i + random.randint(0, interval))
+            else:
+                raise ValueError(f"Unsupported spacing option: {self.spacing}")
 
         return start_time_list
 
@@ -156,6 +171,8 @@ class IntervalEmitter(Emitter):
 
         if self.skip_probability > 0 and random.random() < self.skip_probability:
             return None
+        
+        self._get_offset(parent, timestamp)
         
         if self.event_type_name is not None:
             return AddEvent(
@@ -174,3 +191,26 @@ class IntervalEmitter(Emitter):
             )
 
         return None
+    
+    def _get_offset(self, parent: "Entity", timestamp: int) -> int:
+        offset = 0
+
+        if self.constant_offset is not None:
+            offset += self.constant_offset
+
+        if self.normal_offset is not None:
+            offset += int(random.normalvariate(
+                self.normal_offset.mean,
+                self.normal_offset.standard_deviation,
+            ))
+
+        if self.uniform_offset is not None:
+            offset += random.randint(
+                self.uniform_offset.min,
+                self.uniform_offset.max,
+            )
+
+        if self.exponential_offset is not None:
+            offset += int(random.expovariate(self.exponential_offset.lambda_))
+        
+        return 0
