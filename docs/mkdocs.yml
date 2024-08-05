@@ -62,4 +62,5 @@ nav:
     - Simulating database migrations: recipes/simulating-db-migrations.md
     - recipes/overwrite-update.md
 
+  - Design decisions: design-philosophy.md
   - Contributing: contributing.md

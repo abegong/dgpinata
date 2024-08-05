@@ -1,6 +1,8 @@
 # Add more products
 
-Next, we'll add more products to the simulation. In this section, we're going to use typing, so let's start by importing the necessary modules.
+In this section, we'll add the concept of a product to the simulation.
+
+Let's start by importing some modules that we'll need.
 
 ```python
 import random
@@ -11,7 +13,10 @@ from pydantic import Field
 import dgpinata as dgp
 ```
 
-We'll also add a `Product` entity type to represent the products. In our simulation, `Products` have a `product_id`, a `name`, and a `price`.
+!!! Info
+    DGPinata uses `pydantic` for type checking. Deep knowledge of type systems and `pydantic` isn't necessary to work with DGPinata. If you want to learn about them, the [Pydantic documentation](https://docs.pydantic.dev/latest/) is a good place to start.
+
+Next, let's add a `Product` entity type to represent the products that our lemonade stand sells. In our simulation, `Products` have a `product_id`, a `name`, and a `price`.
 
 ```python
 class Product(dgp.Entity):
@@ -28,11 +33,10 @@ class Product(dgp.Entity):
 
 A few things to note about the `Product` entity type:
 
-* We're using the `StaticEntity` class, which means that the entity is created once and never changes. This save us having to define an `update` method with nothing in it.
 * We're using the `Field` class from Pydantic to define the fields of the entity. The `default_factory` argument allows us to generate a unique `product_id` for each product. In this case, we're using the `uuid4` function from the `uuid` module.
-* We're using the `default_values` class attribute to define the initial products in the simulation. When you initialize it, the `Simulation` class will automatically create instances of the `Product` entity type with these values.
+* The `default_values` class attribute defines which products we want to include by default. When you initialize it, the `Simulation` class will automatically create instances of the `Product` entity type with these values.
 
-Now that we have the `Product` class and we know how to use ids, we may as well apply what we've learned to the `Sale` event type.
+Now that we have the `Product` class and we know how to use ids, we can apply what we've learned to the `Sale` event type as well.
 
 ```python
 class Sale(dgp.Event):
@@ -85,3 +89,11 @@ assert str(sim.get_report()) == """\
 """
 ```
 -->
+
+!!! Tip
+    This section of the tutorial introduced the following concepts:
+
+    * [Fields]: a pydantic 
+    * [default_values](../core-concepts/entity.md): a way to define default values for an `Entity`.
+    * [Choosers](../core-concepts/emitter.md): a way for an `Entity` to emit `Events`.
+

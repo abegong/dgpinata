@@ -15,3 +15,5 @@ The Entity class hierarchy is:
 
 * Entity
 * ...
+
+## `emitters`
