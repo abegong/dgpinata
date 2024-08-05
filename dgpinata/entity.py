@@ -3,11 +3,11 @@ from pydantic import BaseModel, Field
 from typing import ClassVar, Dict, List, Optional, Tuple, TYPE_CHECKING
 from uuid import uuid4
 
-from dgprincess.event import Event
-from dgprincess.emittable import Recordable
-from dgprincess.emitter import Emitter
+from dgpinata.event import Event
+from dgpinata.emittable import Recordable
+from dgpinata.emitter import Emitter
 if TYPE_CHECKING:
-    from dgprincess.simulation import Simulation
+    from dgpinata.simulation import Simulation
 
 class Entity(Recordable):
     """Entities can have state and emit events."""

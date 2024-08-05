@@ -7,7 +7,7 @@ from typing import Dict
 from uuid import uuid4
 from pydantic import Field
 
-import dgprincess as dgp
+import dgpinata as dgp
 
 faker = Faker()
 

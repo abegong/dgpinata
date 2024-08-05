@@ -1,5 +1,5 @@
-from dgprincess import Event
-from dgprincess import Emitter, IntervalEmitter
+from dgpinata import Event
+from dgpinata import Emitter, IntervalEmitter
 
 def test_smoke_interval_emitter():
     class MyEvent(Event):

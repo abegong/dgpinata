@@ -8,7 +8,7 @@ from typing import Dict
 from uuid import uuid4
 from pydantic import Field
 
-import dgprincess as dgp
+import dgpinata as dgp
 ```
 
 We'll also add a `Product` entity type to represent the products. In our simulation, `Products` have a `product_id`, a `name`, and a `price`.

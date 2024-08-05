@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Dict, Type, Union
 
-from dgprincess.emittable import Recordable
+from dgpinata.emittable import Recordable
 
 class MessageType(str, Enum):
     AddEvent = "AddEvent"

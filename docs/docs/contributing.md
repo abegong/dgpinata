@@ -2,7 +2,7 @@
 
 ## Conventions
 
-* Which files get imported into the `dgprincess` namespace?
+* Which files get imported into the `dgpinata` namespace?
 * Docs-based testing
 
 ## Tests

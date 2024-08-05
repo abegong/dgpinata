@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import random
 from typing import Any, Dict, List, Optional, Union
 
-from dgprincess.action import Message, AddEvent, AddEntity
+from dgpinata.action import Message, AddEvent, AddEntity
 
 class NormalDistributionParams(BaseModel):
     mean: float

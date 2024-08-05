@@ -2,14 +2,14 @@
 
 We'll start with a basic "hello world" example for a DGP describing a lemonade stand. Imagine a lemonade stand that (drumroll) ... sells lemonade. For starters, all we want to do is track sales.
 
-We start by importing `dgprincess`, using the `dgp` namespace as a shorthand.
+We start by importing `dgpinata`, using the `dgp` namespace as a shorthand.
 
 ```python
-import dgprincess as dgp
+import dgpinata as dgp
 from typing import Dict
 ```
 
-Next, we define a `Sale` object, with two properties: `amount` and `timestamp`. It's important that each of these properties is annotated with a type hint. Even with no additional context from us, DGPrincess can use these type hints to guess how to generate the schema for a database table.
+Next, we define a `Sale` object, with two properties: `amount` and `timestamp`. It's important that each of these properties is annotated with a type hint. Even with no additional context from us, DGPinata can use these type hints to guess how to generate the schema for a database table.
 
 ```python
 class Sale(dgp.Event):
@@ -43,7 +43,7 @@ sim = dgp.Simulation(
 )
 ```
 
-The `Simulation` object is the backbone of a DGPrincess DGP. It manages all the `Entities`, `Events`, and the flow of time. It also handles creating and destroying `Entities`, handing interactions between `Entities`, I/O to our simulation database, and so on---but we're doing any of those things yet.
+The `Simulation` object is the backbone of a DGPinata DGP. It manages all the `Entities`, `Events`, and the flow of time. It also handles creating and destroying `Entities`, handing interactions between `Entities`, I/O to our simulation database, and so on---but we're doing any of those things yet.
 
 In this case, it's just a thin wrapper that allows us to run the simulation. We create it with two arguments: `event_types` and `entity_types`. `event_types` is a list of all the `Event` types that can be emitted by the simulation. `entity_types` is a list of all the entity types that can emit `Events`.
 

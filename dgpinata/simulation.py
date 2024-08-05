@@ -3,11 +3,11 @@ import random
 import sqlite3
 from typing import Any, Dict, List, Optional, Type
 
-from dgprincess.entity import Entity
-from dgprincess.event import Event
-from dgprincess.emitter import ParameterBuilder
-from dgprincess.action import Message, MessageType
-from dgprincess.chooser import Chooser
+from dgpinata.entity import Entity
+from dgpinata.event import Event
+from dgpinata.emitter import ParameterBuilder
+from dgpinata.action import Message, MessageType
+from dgpinata.chooser import Chooser
 
 class SimulationReport(BaseModel):
     simulation: "Simulation" = Field(..., title="The simulation that this report is based on")

@@ -7,7 +7,7 @@ def read_requirements(file):
 
 
 def get_version():
-    with open("dgprincess/__init__.py", "r") as f:
+    with open("dgpinata/__init__.py", "r") as f:
         for line in f:
             if line.startswith("__version__"):
                 return line.split("=")[1].strip().strip('"')
@@ -16,7 +16,7 @@ def get_version():
 
 
 setup(
-    name="dgprincess",
+    name="dgpinata",
     version=get_version(),
     packages=find_packages(),
     url="",

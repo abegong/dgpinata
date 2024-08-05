@@ -3,9 +3,9 @@
 You can overwrite the `_update` method for an `Entity` in order to get finer-grained control over the logic for creating Mess.
 
 ```python
-import dgprincess as dgp
-from dgprincess.action import AddEvent
-from dgprincess.emitter import ParameterBuilder
+import dgpinata as dgp
+from dgpinata.action import AddEvent
+from dgpinata.emitter import ParameterBuilder
 
 class Sale(dgp.Event):
     amount: int
