@@ -4,7 +4,7 @@ You can overwrite the `_update` method for an `Entity` in order to get finer-gra
 
 ```python
 import dgpinata as dgp
-from dgpinata.action import AddEvent
+from dgpinata.message import AddEvent
 from dgpinata.emitter import ParameterBuilder
 
 class Sale(dgp.Event):
