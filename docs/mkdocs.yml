@@ -1,4 +1,4 @@
-site_name: DGPinata
+site_name: DGPiñata
 
 theme:
   name: material
@@ -60,6 +60,7 @@ nav:
   - Recipes:
     - Simulating changes to the DGP: recipes/simulating-dgp-changes.md
     - Simulating database migrations: recipes/simulating-db-migrations.md
+    - recipes/adjust-spacing.md
     - recipes/overwrite-update.md
 
   - Design decisions: design-philosophy.md
