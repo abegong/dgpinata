@@ -49,6 +49,7 @@ class Simulation(BaseModel):
     events: Dict[str, List[Event]] = {}
     tables: List[str] = []
 
+    prev_timestamp: int = Field(0, title="Previous time in the simulation")
     timestamp: int = Field(0, title="Current time in the simulation")
     interval: int = 3600
     rand_seed: Optional[int] = None
@@ -84,8 +85,10 @@ class Simulation(BaseModel):
 
     def run(self, steps: int):
         for i in range(steps):
-            self._update_entities()
+            self.prev_timestamp = self.timestamp
             self.timestamp += self.interval
+            print(self.prev_timestamp, self.timestamp)
+            self._update_entities()
 
         return self.get_report()
     
@@ -146,7 +149,10 @@ class Simulation(BaseModel):
                 self._update_entity(entity)
     
     def _update_entity(self, entity: Entity):
-        new_actions : List[Message] = entity.update(timestamp=self.timestamp)
+        new_actions : List[Message] = entity.update(
+            prev_timestamp=self.prev_timestamp,
+            timestamp=self.timestamp
+        )
 
         for action in new_actions:
             self._process_action(action)
@@ -245,3 +251,21 @@ class Simulation(BaseModel):
             parameters[pb.name] = new_param        
         
         return parameters
+
+    def _build_parameter(self, parameter_builder, parent, timestamp) -> Dict:
+        """Iterate over parameter_builders to build up the keyword args for an Event or Entity"""
+
+        sim = self
+        
+        if parameter_builder.eval_str is not None:
+            return eval(parameter_builder.eval_str)
+
+        elif isinstance(parameter_builder.value, Chooser):
+            return parameter_builder.value.invoke(
+                sim=sim,
+                parent=parent,
+                timestamp=timestamp,
+            )
+
+        else:
+            return parameter_builder.value

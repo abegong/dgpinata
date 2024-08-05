@@ -12,7 +12,8 @@ class Sale(dgp.Event):
     timestamp: int
 
 class Stand(dgp.Entity):
-    def _update(self, timestamp):
+    def _update(self, prev_timestamp, timestamp):
+        print(prev_timestamp, timestamp)
         new_action = AddEvent(
             event_type_name="Sale",
             parameter_builders={
@@ -42,7 +43,7 @@ print(sim.run(10))
 ```python
 assert list(sim.events.keys()) == ["Sale"]
 assert len(sim.events["Sale"]) == 10
-assert sim.events["Sale"][0] == Sale(amount=1, timestamp=0)
+assert sim.events["Sale"][0] == Sale(amount=1, timestamp=3600)
 assert str(sim.get_report()) == """\
 === Entities ===
   Stand: 1

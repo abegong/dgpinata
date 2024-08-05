@@ -24,20 +24,28 @@ class Entity(Recordable):
         """Alias for self.simulation"""
         return self.simulation
 
-    def update(self, timestamp: int) -> List["Message"]:
+    def update(
+        self,
+        prev_timestamp: int,
+        timestamp: int
+    ) -> List["Message"]:
         """Update the entity based on the elapsed time."""
         new_actions = []
 
         for emitter in self.emitters.values():
             emitted_actions = emitter.emit(
                 parent=self,
+                prev_timestamp=prev_timestamp,
                 timestamp=timestamp,
             )
             new_actions.extend(emitted_actions)
 
-        more_new_actions = self._update(timestamp)
+        more_new_actions = self._update(
+            prev_timestamp=prev_timestamp,
+            timestamp=timestamp,
+        )
         return new_actions + more_new_actions
     
-    def _update(self, timestamp: int) -> List["Message"]:
+    def _update(self, prev_timestamp:int, timestamp: int) -> List["Message"]:
         return []
         

@@ -29,19 +29,34 @@ class Emitter(BaseModel):
 
 class IntervalSpacingOption(str, Enum):
     START="start"
+    CONSTANT="offset"
     UNIFORM="uniform"
     EXPONENTIAL="exponential"
 
 
 class IntervalEmitter(Emitter):
-    """Emits zero or one events per interval
-    Events can be spaced regularly, distributed uniformly within the interval, offset according to a normal distribution, or offset according to uniform distribution
+    """Emits zero or one events per interval.
+
+    Events can be spaced regularly, distributed uniformly within the interval, offset according to a normal distribution, or offset according to uniform distribution.
+
     You can use skip_probability to skip events at random
+
+    Args:
+        event_type_name (str): The name of the event type to emit.
+        entity_type_name (str): The name of the entity type to emit.
+        interval (Union[int, ParameterBuilder]): The interval between events.
+        skip_probability (float): The probability of skipping an event.
+        spacing (IntervalSpacingOption): The spacing option.
+        constant_offset (Optional[int]): The constant offset.
+        normal_offset (Optional[NormalDistributionParams]): The normal distribution offset.
+        uniform_offset (Optional[UniformDistributionParams]): The uniform distribution offset.
+        parameter_builders (Dict[str, ParameterBuilder]): The parameter builders.
     """
 
     interval: Union[int, ParameterBuilder]
     skip_probability: Union[float, ParameterBuilder]
     spacing: IntervalSpacingOption
+    constant_offset: Optional[int] = None
     normal_offset: Optional[NormalDistributionParams] = None
     uniform_offset: Optional[UniformDistributionParams] = None
     parameter_builders: Dict[str, ParameterBuilder]
@@ -54,6 +69,7 @@ class IntervalEmitter(Emitter):
         interval: Optional[Union[int, str]] = None,
         skip_probability: float = 0.0,
         spacing: Optional[Union[str, IntervalSpacingOption]] = IntervalSpacingOption.START,
+        constant_offset: Optional[int] = None,
         normal_offset: Optional[NormalDistributionParams] = None,
         uniform_offset: Optional[UniformDistributionParams] = None,
         **kwargs,
@@ -80,6 +96,7 @@ class IntervalEmitter(Emitter):
             interval=interval,
             skip_probability=skip_probability,
             spacing=spacing,
+            constant_offset=constant_offset,
             normal_offset=normal_offset,
             uniform_offset=uniform_offset,
             parameter_builders=parameter_builders,
@@ -103,15 +120,45 @@ class IntervalEmitter(Emitter):
     
     def emit(self,
         parent: "Entity",
+        prev_timestamp: int,
         timestamp: int,
     ) -> List[Message]:
-        #!!! Ignore spacing and interval_logic for now
+        """
+
+        Note: prev_timestamp is inclusive, timestamp is exclusive.
+        If prev_timestamp == timestamp, no events are emitted.
+        """
+        intervals = self._get_interval_start_time_list(parent, prev_timestamp, timestamp)
+
+        actions = []
+        for interval_start in intervals:
+            new_action = self._emit_event(parent, interval_start)
+            if new_action is not None:
+                actions.append(new_action)
+        
+        return actions
+    
+    def _get_interval_start_time_list(self, parent: "Entity", prev_timestamp: int, timestamp: int):
+        """Return a list of start times for each interval."""
+
+        if isinstance(self.interval, ParameterBuilder):
+            interval = parent.sim._build_parameter(self.interval, parent, timestamp)
+        else:
+            interval = self.interval
+
+        start_time_list = []
+        for i in range(prev_timestamp, timestamp, interval):
+            start_time_list.append(i)
+
+        return start_time_list
+
+    def _emit_event(self, parent: "Entity", timestamp: int) -> Optional[Message]:
 
         if self.skip_probability > 0 and random.random() < self.skip_probability:
-            return []
+            return None
         
         if self.event_type_name is not None:
-            new_action = AddEvent(
+            return AddEvent(
                 event_type_name=self.event_type_name,
                 parameter_builders=self.parameter_builders,
                 parent=parent,
@@ -119,11 +166,11 @@ class IntervalEmitter(Emitter):
             )
         
         elif self.entity_type_name is not None:
-            new_action = AddEntity(
+            return AddEntity(
                 entity_type_name=self.entity_type_name,
                 parameter_builders=self.parameter_builders,
                 parent=parent,
                 timestamp=timestamp,
             )
 
-        return [new_action]
+        return None
