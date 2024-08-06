@@ -44,10 +44,12 @@ nav:
     - tutorial/add-customers.md
     - tutorial/add-db-analytics.md
     - tutorial/add-customer-prefs.md
-    - Model data entry errors: tutorial/model-data-entry-errors.md
     - Model customer churn: tutorial/model-customer-churn.md
-    - Run marketing campaigns: tutorial/run-marketing-campaigns.md
+    - Add data entry errors: tutorial/model-data-entry-errors.md
+    - Add marketing campaigns: tutorial/run-marketing-campaigns.md
     - Acquire another lemonade stand: tutorial/acquire-lemonade-stand.md
+    - Add more changes to the DGP: tutorial/add-various-changes.md
+    - Conclusion: tutorial/conclusion.md
 
   - Core concepts:
     - core-concepts/overview.md

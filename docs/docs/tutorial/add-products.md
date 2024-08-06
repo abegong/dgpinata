@@ -66,6 +66,10 @@ class Stand(dgp.Entity):
     }
 ```
 
+This code adds a new `Emitter` to the `Stand` entity type. The `new_sale` emitter emits `Sale` events, and uses a `RandomObjectAttributeChooser` to select a random product from the `Product` entity type. The `amount` field is set to 1, and the `timestamp` field is set to the current timestamp.
+
+Finally, let's update the `Simulation` class to include the `Product` entity type.
+
 ```python
 sim = dgp.Simulation(
     event_types=[Sale],
@@ -74,6 +78,8 @@ sim = dgp.Simulation(
 
 print(sim.run(steps=10))
 ```
+
+That's it! We've added products to our simulation, and now our lemonade stand can sell lemonade, iced tea, and water. In the next section, we'll add the concept of a customer to the simulation, and learn how to use some other features of DGPinata.
 
 <!--
 ```python
@@ -93,7 +99,7 @@ assert str(sim.get_report()) == """\
 !!! Tip
     This section of the tutorial introduced the following concepts:
 
-    * [Fields]: a pydantic 
+    * [Fields]() : A concept from `pydantic` that allows you to define the fields of a `BaseModel.` In DGPinata, you can use Fields within `Event`s and `Entity` class.
     * [default_values](../core-concepts/entity.md): a way to define default values for an `Entity`.
     * [Choosers](../core-concepts/emitter.md): a way for an `Entity` to emit `Events`.
 
