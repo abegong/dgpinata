@@ -1,4 +1,4 @@
-# DGPinata
+# DGPiñata
 
 *Generate realistically messy multitable datasets.*
 
@@ -15,7 +15,7 @@ git clone git@github.com:abegong/dgpinata.git
 pip install dgpinata
 ```
 
-## Why DGPinata?
+## Why DGPiñata?
 
 DGP is short for [Data Generating Process](https://stats.stackexchange.com/questions/443320/what-does-a-data-generating-process-dgp-actually-mean): the things that happen in the real world in order to create data that later gets processed for analysis. A DGP can be as simple as a random number generator or as complex as a full-fledged simulation of a business process.
 
@@ -25,6 +25,6 @@ In contrast to these libraries, DGPinata takes an [agent-based modeling](https:/
 
 This allows DGPinata to simulate more realistic DGPs, including changes in the DGP over time.
 
-## Yes, but why "pinata"?
+## Yes, but why "Piñata"?
 
 Because when you hit it, delicious data scatters everywhere.

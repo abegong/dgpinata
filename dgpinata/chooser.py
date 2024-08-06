@@ -5,8 +5,10 @@ class Chooser(BaseModel):
     pass
 
 class RandomObjectAttributeChooser(Chooser):
-    object_eval_str: str
-    attribute: str
+    """Pick a random object from a list and return the value of a specified attribute of that object."""
+
+    object_eval_str: str # A string that can be evaluated to a list of objects
+    attribute: str       # The attribute to return from the chosen object
 
     def invoke(
         self,
