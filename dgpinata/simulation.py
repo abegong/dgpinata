@@ -87,7 +87,6 @@ class Simulation(BaseModel):
         for i in range(steps):
             self.prev_timestamp = self.timestamp
             self.timestamp += self.interval
-            print(self.prev_timestamp, self.timestamp)
             self._update_entities()
 
         return self.get_report()
