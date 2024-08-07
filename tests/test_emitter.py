@@ -1,6 +1,8 @@
 import random
 
-from dgpinata import IntervalEmitter
+from dgpinata.emitters.interval import IntervalEmitter
+from dgpinata.emitters.poisson import PoissonEmitter
+from dgpinata.emitters.gamma import GammaEmitter
 
 def _extract_event_timestamps(events):
     return [event.timestamp for event in events]
@@ -12,6 +14,24 @@ def test__interval_emitter__from_params():
         interval=3600,
         offset=0,
         skip_probability=0.8,
+        created_at="timestamp",
+    )
+
+def test__poisson_emitter__from_params():
+    
+    emitter = PoissonEmitter.from_params(
+        event_type_name="MyEvent",
+        rate=1,
+        time_interval=3600,
+        created_at="timestamp",
+    )
+
+def test__gamma_emitter__from_params():
+    
+    emitter = GammaEmitter.from_params(
+        event_type_name="MyEvent",
+        shape=1,
+        scale=1,
         created_at="timestamp",
     )
 

@@ -5,7 +5,8 @@ from uuid import uuid4
 
 from dgpinata.event import Event
 from dgpinata.emittable import Recordable
-from dgpinata.emitter import Emitter
+from dgpinata.emitters.base import Emitter
+
 if TYPE_CHECKING:
     from dgpinata.simulation import Simulation
 

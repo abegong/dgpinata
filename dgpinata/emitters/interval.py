@@ -1,9 +1,11 @@
 from enum import Enum
 from pydantic import BaseModel
 import random
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 
-from dgpinata.message import Message, AddEvent, AddEntity
+from dgpinata.message import Message
+from dgpinata.emitters.base import Emitter, ParameterBuilder
+
 
 class NormalDistributionParams(BaseModel):
     mean: float
@@ -15,25 +17,6 @@ class UniformDistributionParams(BaseModel):
 
 class ExponentialDistributionParams(BaseModel):
     lambda_: float
-
-class ParameterBuilder(BaseModel):
-    name: str
-    eval_str: Optional[str] = None
-    value: Optional[Any] = None
-
-
-class Emitter(BaseModel):
-    event_type_name: Optional[str] = None
-    entity_type_name: Optional[str] = None
-
-    def emit(
-        self,
-        parent: "Entity",
-        prev_timestamp: int,
-        timestamp: int
-    ) -> List[Message]:
-        raise NotImplementedError
-
 
 class IntervalSpacingOption(str, Enum):
     START="start"
@@ -66,7 +49,7 @@ class IntervalEmitter(Emitter):
     normal_offset: Optional[NormalDistributionParams] = None
     uniform_offset: Optional[UniformDistributionParams] = None
     exponential_offset: Optional[ExponentialDistributionParams] = None
-    parameter_builders: Dict[str, ParameterBuilder]
+    # parameter_builders: Dict[str, ParameterBuilder]
 
     @classmethod
     def from_params(
@@ -110,42 +93,6 @@ class IntervalEmitter(Emitter):
             exponential_offset=exponential_offset,
             parameter_builders=parameter_builders,
         )
-
-    @classmethod
-    def _define_parameter_builders(cls, **kwargs):
-        parameter_builders = {}
-        for parameter_name, value in kwargs.items():
-            if type(value) == str:
-                parameter_builders[parameter_name] = ParameterBuilder(
-                    name=parameter_name,
-                    eval_str=value,
-                )
-            else:
-                parameter_builders[parameter_name] = ParameterBuilder(
-                    name=parameter_name,
-                    value=value,
-                )
-        return parameter_builders
-    
-    def emit(self,
-        parent: "Entity",
-        prev_timestamp: int,
-        timestamp: int,
-    ) -> List[Message]:
-        """
-
-        Note: prev_timestamp is inclusive, timestamp is exclusive.
-        If prev_timestamp == timestamp, no events are emitted.
-        """
-        intervals = self._get_interval_start_time_list(parent, prev_timestamp, timestamp)
-
-        actions = []
-        for interval_start in intervals:
-            new_action = self._emit_event(parent, interval_start)
-            if new_action is not None:
-                actions.append(new_action)
-        
-        return actions
     
     def _get_interval_start_time_list(self, parent: "Entity", prev_timestamp: int, timestamp: int):
         """Return a list of start times for each interval."""
@@ -173,24 +120,8 @@ class IntervalEmitter(Emitter):
             return None
         
         self._get_offset(parent, timestamp)
-        
-        if self.event_type_name is not None:
-            return AddEvent(
-                event_type_name=self.event_type_name,
-                parameter_builders=self.parameter_builders,
-                parent=parent,
-                timestamp=timestamp,
-            )
-        
-        elif self.entity_type_name is not None:
-            return AddEntity(
-                entity_type_name=self.entity_type_name,
-                parameter_builders=self.parameter_builders,
-                parent=parent,
-                timestamp=timestamp,
-            )
 
-        return None
+        return super()._emit_event(parent, timestamp)
     
     def _get_offset(self, parent: "Entity", timestamp: int) -> int:
         offset = 0

@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Type
 
 from dgpinata.entity import Entity
 from dgpinata.event import Event
-from dgpinata.emitter import ParameterBuilder
+from dgpinata.emitters.base import ParameterBuilder
 from dgpinata.message import Message, MessageType
 from dgpinata.chooser import Chooser
 
